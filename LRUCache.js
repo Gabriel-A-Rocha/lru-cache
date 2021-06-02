@@ -1,7 +1,10 @@
+const KeyList = require("./KeyList");
+
 class Cache {
   size = 5;
   hash = new Map();
   lru = "";
+  keyList = new KeyList(this.size);
 
   constructor({ size }) {
     typeof size === "number" && (this.size = size);
