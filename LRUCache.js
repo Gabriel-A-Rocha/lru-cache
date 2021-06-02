@@ -1,6 +1,7 @@
 class Cache {
   size = 5;
   hash = new Map();
+  lru = "";
 
   constructor({ size }) {
     typeof size === "number" && (this.size = size);
@@ -8,38 +9,23 @@ class Cache {
   }
 
   add(obj) {
-    /* if (this.getHashSize() === this.size) {
-      delete this.hash[this.lru];
-    } */
+    if (this.hash.size === this.size) {
+      // this.remove(this.lru);
+    }
     const [key, value] = Object.entries(obj)[0];
     this.hash.set(key, value);
-    this.setLru();
-  }
-
-  getHashSize() {
-    return this.hash.size;
-  }
-
-  setLru() {
-    const oldestKey = Object.keys(this.hash)[0];
-    this.lru = oldestKey;
   }
 
   clear() {
-    this.hash = {};
+    this.hash.clear();
   }
 
   remove(key) {
-    if (this.hash[key]) {
-      delete this.hash[key];
-    }
+    this.hash.get(key) && this.hash.delete(key);
   }
 
   read(key) {
-    const match = this.hash[key];
-    if (match) {
-      return match;
-    }
+    return this.hash.get(key);
   }
 }
 
