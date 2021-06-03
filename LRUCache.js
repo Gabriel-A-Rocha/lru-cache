@@ -9,14 +9,19 @@ class Cache {
     this.maxSize = Number(size);
   }
 
-  add(obj) {
-    if (this.hash.size > this.maxSize) {
-      const lru = this.keyList.getLRU();
-      this.hash.delete(lru);
+  add(keyValueObj) {
+    const [key, value] = Object.entries(keyValueObj)[0];
+
+    if (this.hash.size < this.maxSize) {
+      this.hash.set(key, value);
+      this.keyList.add(key);
+      return;
     }
-    const [key, value] = Object.entries(obj)[0];
+
+    const lru = this.keyList.getLRU();
+    this.remove(lru);
     this.hash.set(key, value);
-    this.keyList.add(obj);
+    this.keyList.add(key);
     return;
   }
 
@@ -25,16 +30,31 @@ class Cache {
   }
 
   remove(key) {
-    this.hash.get(key) && this.hash.delete(key);
+    if (this.hash.get(key)) {
+      this.hash.delete(key);
+      this.keyList.remove(key);
+    }
   }
 
   read(key) {
-    return this.hash.get(key);
+    const value = this.hash.get(key);
+
+    if (value) {
+      this.keyList.remove(key);
+      this.keyList.add(key);
+    }
+    return value;
   }
 }
 
-const cache = new Cache({ size: 3 });
+/* const cache = new Cache({ size: 3 });
+
 cache.add({ key1: "value1" });
-const response = cache.hash.get("key1");
+cache.add({ key2: "value2" });
+cache.add({ key3: "value3" });
+cache.add({ key4: "value4" });
+
+const response = cache.hash;
+console.log(response); */
 
 module.exports = { Cache };

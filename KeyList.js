@@ -22,24 +22,16 @@ class KeyList {
   }
 
   getLRU() {
+    if (this.length === 0) {
+      return undefined;
+    }
+
     let node = this.head;
+
     while (node["next"] !== null) {
       node = node["next"];
     }
     return node["value"];
-  }
-
-  removeLRU() {
-    let node = this.head;
-    let previous = this.head;
-
-    while (node["next"] !== null) {
-      node = node["next"];
-    }
-
-    while (previous["next"] !== node) {
-      previous["next"] = null;
-    }
   }
 
   remove(k) {
@@ -47,29 +39,25 @@ class KeyList {
       return undefined;
     }
 
-    if (this.length === 1) {
+    if (this.head["value"] === k) {
       return this.removeFromHead();
     }
 
     let previous = this["head"];
     let node = previous["next"];
 
-    while (node) {
-      if (node["value"] === k) {
-        break;
-      }
-      previous = node;
+    while (node["value"] !== k) {
       node = node["next"];
     }
 
-    if (node === "null") {
-      return undefined;
+    while (previous["next"] !== node) {
+      previous = previous["next"];
     }
 
     previous["next"] = node["next"];
     this.length--;
 
-    return node["value"];
+    return this;
   }
 
   removeFromHead() {

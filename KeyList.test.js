@@ -30,8 +30,19 @@ test("should return the LRU Key", () => {
   const keyList = new KeyList();
   keyList.add("firstKey");
   keyList.add("secondKey");
+  keyList.add("thirdKey");
   const lru = keyList.getLRU();
   expect(lru).toEqual("firstKey");
+});
+
+test("should delete the LRU entry", () => {
+  const keyList = new KeyList();
+  keyList.add("firstKey");
+  keyList.add("secondKey");
+  keyList.add("thirdKey");
+  const lru = keyList.getLRU();
+  keyList.removeFromHead(lru);
+  expect(keyList.length).toEqual(2);
 });
 
 test("should delete a node sent as parameter", () => {
@@ -39,8 +50,8 @@ test("should delete a node sent as parameter", () => {
   list.add("A1");
   list.add("A2");
   list.add("A3");
-  const removedKey = list.remove("A2");
-  expect(removedKey).toBe("A2");
+  list.remove("A2");
+  expect(list.length).toBe(2);
 });
 
 test("should delete a node sent as parameter", () => {
