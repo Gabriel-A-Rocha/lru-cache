@@ -1,22 +1,23 @@
 const KeyList = require("./KeyList");
 
 class Cache {
-  size = 5;
+  maxSize;
   hash = new Map();
-  lru = "";
-  keyList = new KeyList(this.size);
+  keyList = new KeyList();
 
   constructor({ size }) {
-    typeof size === "number" && (this.size = size);
-    typeof size === "string" && (this.size = Number(size));
+    this.maxSize = Number(size);
   }
 
   add(obj) {
-    if (this.hash.size === this.size) {
-      // this.remove(this.lru);
+    if (this.hash.size > this.maxSize) {
+      const lru = this.keyList.getLRU();
+      this.hash.delete(lru);
     }
     const [key, value] = Object.entries(obj)[0];
     this.hash.set(key, value);
+    this.keyList.add(obj);
+    return;
   }
 
   clear() {
@@ -31,5 +32,9 @@ class Cache {
     return this.hash.get(key);
   }
 }
+
+const cache = new Cache({ size: 3 });
+cache.add({ key1: "value1" });
+const response = cache.hash.get("key1");
 
 module.exports = { Cache };
